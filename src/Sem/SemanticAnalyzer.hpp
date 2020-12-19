@@ -1,3 +1,5 @@
+#ifndef SEMANTIC_ANALYZER
+#define SEMANTIC_ANALYZER
 #include "../Parser/Compiler.hpp"
 class SemanticAnalyzer : public NodeVisitor {
 public:
@@ -25,4 +27,4 @@ public:
     Compiler* compilercontext;
     RootAstPtr rootast;
 };
-
+#endif

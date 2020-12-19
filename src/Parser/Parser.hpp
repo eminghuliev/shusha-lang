@@ -1,3 +1,5 @@
+#ifndef PARSER_HPP
+#define PARSER_HPP
 #include <cstdlib>
 #include <stdexcept>
 #include <cstring>
@@ -44,4 +46,4 @@ class Parser {
         Tokens token;
 
 };
-
+#endif

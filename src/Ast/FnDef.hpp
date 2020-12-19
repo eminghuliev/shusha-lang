@@ -1,3 +1,5 @@
+#ifndef FNDEF_HPP
+#define FNDEF_HPP
 #include <vector>
 #include "../Front/Lexer.hpp"
 #include "NodeExpr.hpp"
@@ -64,3 +66,4 @@ public:
     LLVMValueRef LLVMFunc;
     bool have_return = false;
 };
+#endif

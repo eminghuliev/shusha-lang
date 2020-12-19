@@ -1,3 +1,5 @@
+#ifndef ROOTAST_HPP
+#define ROOTAST_HPP
 #include <memory>
 #include <vector>
 #include <unordered_map>
@@ -138,4 +140,4 @@ protected:
     ASTNodePtr fn_def;
 };
 
-
+#endif

@@ -1,3 +1,5 @@
+#ifndef NODE_EXPR_HPP
+#define NODE_EXPR_HPP
 #include <memory>
 #include "../llvm-wrapper/Shusha-LLVM.hpp"
 /// Declaration expression
@@ -274,3 +276,4 @@ public:
 
     
 };
+#endif

@@ -1,3 +1,5 @@
+#ifndef COMPILER_HPP
+#define COMPILER_HPP
 #include "../llvm-wrapper/Shusha-LLVM.hpp"
 #include "../Utils/File.hpp"
 #include "../Utils/String.hpp"
@@ -34,3 +36,4 @@ public:
     LLVMTargetDataRef targetDataRef;
     LLVMBuilderRef builder;
 };
+#endif

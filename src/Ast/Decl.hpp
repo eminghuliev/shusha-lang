@@ -1,3 +1,5 @@
+#ifndef DECL_HPP
+#define DECL_HPP
 #include <memory>
 typedef std::shared_ptr<TypeNode> TypeNodePtr;
 typedef std::shared_ptr<ParamNode> ParamNodePtr;
@@ -26,3 +28,4 @@ typedef std::shared_ptr<AsmOutput> AsmOutputPtr;
 typedef std::shared_ptr<FuncParamList> FuncParamListPtr;
 typedef std::shared_ptr<VarAssign> VarAssignPtr;
 typedef std::shared_ptr<PrefixOperation> PrefixOperationPtr;
+#endif

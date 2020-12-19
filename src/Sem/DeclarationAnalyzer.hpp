@@ -1,3 +1,5 @@
+#ifndef DECLARATION_ANALYZER_HPP
+#define DECLARATION_ANALYZER_HPP
 /// Copy smart pointer based objects
 template<class T, class... Args>
 shared_ptr<T> make_shared(Args&&... args)
@@ -30,4 +32,4 @@ public:
     void copy_variable(const VarDeclPtr& node);
     ~DeclarationAnalyzer() { }
 };
-
+#endif

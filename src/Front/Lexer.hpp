@@ -1,3 +1,5 @@
+#ifndef LEXER_HPP
+#define LEXER_HPP
 #include <vector>
 #include <string>
 #include <unordered_map>
@@ -166,3 +168,4 @@ class Lexer {
     private:
         
 };
+#endif
