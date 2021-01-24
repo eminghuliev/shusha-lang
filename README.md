@@ -4,4 +4,6 @@
 <p align="center">
 Shusha programming language (*WIP*)</p>
 
-GOUP
+Copyright
+---------------------------------
+Copyright (c) 2021 GOUP. All rights reserved.
