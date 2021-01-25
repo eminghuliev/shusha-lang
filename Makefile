@@ -1,4 +1,4 @@
-CXX = clang++-11
+CXX = clang++
 
 SRC_PATH = src
 BUILD_PATH = build
@@ -8,13 +8,21 @@ BIN_NAME = shusha
 
 SRC_EXT = cpp
 
+LLVM_BUILD_PATH := $(HOME)/llvm-project/build
+LLVM_BIN_PATH 	:= $(LLVM_BUILD_PATH)/bin
+$(info -----------------------------------------------)
+$(info Using LLVM_BUILD_PATH = $(LLVM_BUILD_PATH))
+$(info Using LLVM_BIN_PATH = $(LLVM_BIN_PATH))
+$(info -----------------------------------------------)
+LLVM_CXXFLAGS := `$(LLVM_BIN_PATH)/llvm-config --cxxflags`
+LLVM_LDFLAGS := `$(LLVM_BIN_PATH)/llvm-config --ldflags --libs --system-libs`
 SOURCES = $(shell find $(SRC_PATH) -name '*.$(SRC_EXT)' | sort -k 1nr | cut -f2-)
 OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o)
 DEPS = $(OBJECTS:.o=.d)
 
 COMPILE_FLAGS = -std=c++17 -g
-INCLUDES = -I include/ -I /usr/local/include -I /usr/lib/llvm-11/include
-LIBS = -L/usr/lib/llvm-11/lib -lLLVM-11
+INCLUDES = -I include/ -I /usr/local/include $(LLVM_CXXFLAGS)
+LIBS = $(LLVM_LDFLAGS)
 
 .PHONY: default_target
 default_target: release
@@ -51,4 +59,4 @@ $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
 
 $(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
 	@echo "Compiling: $< -> $@"
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@ -frtti -fexceptions
