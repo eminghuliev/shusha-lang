@@ -168,7 +168,9 @@ void SemanticAnalyzer::visitVar(const VarDeclPtr& node) {
             return;
         }
     }
-    check_cast_decl(node->getType()->typeptr, node->getExpr()->typenode->typeptr, node->getExpr());
+    auto VarExpr = node->getExpr();
+    if(VarExpr)
+        check_cast_decl(node->getType()->typeptr, node->getExpr()->typenode->typeptr, VarExpr);
 }
 void SemanticAnalyzer::visitCodeScope(const CodeScopePtr& node){
     NodeVisitor::visitCodeScope(node);

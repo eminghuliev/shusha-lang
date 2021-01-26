@@ -86,7 +86,6 @@ bool canCastType(TypePtr actual_type,
             return true;
         }
     }
-
     return false;
 }
 

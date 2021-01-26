@@ -137,9 +137,6 @@ ExpressionPtr Parser::ParsePrefixDecl(Tokens& token) {
         assignptr->setexpr(exprptr);
         return assignptr;
     }
-    
-
-
     return suffixres;
 }
 ExpressionPtr Parser::ParseExpression(Tokens& token) {

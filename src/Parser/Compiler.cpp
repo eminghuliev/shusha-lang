@@ -198,7 +198,7 @@ void Compiler::visit(IntegerLiteral* node){
     node->ret_ref = value;
 }
 
-void Compiler::visit(StringLiteral* node){
+void Compiler::visit(StringLiteral* node) {
     StringLiteral* str_literal = node;
     node->var_decl->getType()->typeptr->llvmtype = LLVMPointerType(LLVMArrayType(LLVMInt8Type(), str_literal->value.length() + 1), 0);
     LLVMValueRef strconst = LLVMConstString(str_literal->value.c_str(), str_literal->value.length(), false);
@@ -212,6 +212,8 @@ void Compiler::visit(StringLiteral* node){
 
 void Compiler::visitVar(const VarDeclPtr& node) {
     LLVMValueRef vardecl_res;
+    auto VarExpr = node->getExpr();
+    if(!VarExpr) return;
     auto varexpr_type = node->getExpr()->typenode;
     auto var_type = node->getType();
     if(node->getExpr()->nodetype != TypeNodeTableSymbol) {
@@ -241,7 +243,7 @@ void Compiler::visit(AsmExpr* node) {
         const_buffer.append(string_format("{%s}", nodes->constraint.c_str()));
         param_index+=1;
         index+=1;
-        if(index <  total_count){
+        if(index < total_count){
             const_buffer.append(",");
         }
     }
