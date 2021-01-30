@@ -163,7 +163,7 @@ void Compiler::store_assign(const VarDeclPtr& node) {
             node->val_ref);
 }
 
-void Compiler::visit(PrefixOperation* node){
+void Compiler::visit(PrefixOperation* node) {
     if(node->getOperation() == PrefixOperationGetPointer && 
             node->getopexpr()->nodetype == TypeNodeTableSymbol) {
         node->ret_ref = node->getopexpr()->getVarDecl()->val_ref;
@@ -171,7 +171,7 @@ void Compiler::visit(PrefixOperation* node){
     }
 }
 
-void Compiler::visit(Symbol* node){
+void Compiler::visit(Symbol* node) {
     TypeNodePtr type = node->var_decl->getType()->typeptr;
     if(type->type_id == TypeNodeTableIdString){
         LLVMValueRef zeroIndex = LLVMConstInt( LLVMInt64Type(), 0, true );
@@ -189,7 +189,7 @@ void Compiler::visit(Symbol* node){
     }
 }
 
-void Compiler::visit(IntegerLiteral* node){
+void Compiler::visit(IntegerLiteral* node) {
     TypeNodePtr type = node->var_decl->getType()->typeptr;
     if(type->type_id == TypeNodeTablePointer){
         type = node->var_decl->getType()->typeptr->ptr->child_type;
@@ -213,7 +213,13 @@ void Compiler::visit(StringLiteral* node) {
 void Compiler::visitVar(const VarDeclPtr& node) {
     LLVMValueRef vardecl_res;
     auto VarExpr = node->getExpr();
-    if(!VarExpr) return;
+    if(!VarExpr) {
+        node->val_ref = LLVMBuildAlloca(builder, node->getType()->typeptr->llvmtype, 
+            node->getName().c_str());
+        if(node->const_val_ref)
+            LLVMBuildStore(builder, node->const_val_ref, node->val_ref);
+        return;
+    }
     auto varexpr_type = node->getExpr()->typenode;
     auto var_type = node->getType();
     if(node->getExpr()->nodetype != TypeNodeTableSymbol) {
@@ -259,7 +265,7 @@ void Compiler::visit(AsmExpr* node) {
         }
     }
 
-    for(auto& nodes: node->clobbers){
+    for(auto& nodes: node->clobbers) {
         const_buffer.append(string_format("~{%s}", nodes->clobname.c_str()));
         index+=1;
         if(index < total_count){
@@ -276,9 +282,6 @@ void Compiler::visit(AsmExpr* node) {
 }
 
 void Compiler::visit(ReturnStatement* node) {
-    if(node){
-        __asm__ volatile("nop");
-    }
 }
 
 LLVMValueRef Compiler::genExpr(const ExpressionPtr& expr, const TypePtr& type) {
@@ -299,7 +302,7 @@ LLVMValueRef Compiler::genExpr(const ExpressionPtr& expr, const TypePtr& type) {
         LLVMSetUnnamedAddr(glob, true);
         return glob;
     }
-    else if(dynamic_pointer_cast<Symbol>(expr)){
+    else if(dynamic_pointer_cast<Symbol>(expr)) {
         if(type_id == TypeNodeTableIdString){
             LLVMValueRef zeroIndex = LLVMConstInt( LLVMInt64Type(), 0, true );
             LLVMValueRef indexes[2] = { zeroIndex, zeroIndex };
@@ -318,7 +321,7 @@ void Compiler::visit(FuncCall* node) {
     FnDefPtr fndef = dynamic_pointer_cast<FnDef>(node->getFnExpr()->getFnDef());
     int arg_cnt = 0;
     if(node->getparams()){
-        for(auto &nodes: *node->getparams()){
+        for(auto &nodes: *node->getparams()) {
             param_values = 
                 static_cast<LLVMValueRef*>(calloc(node->getparams()->size(), sizeof(LLVMValueRef)));
             LLVMValueRef retval = genExpr(nodes, 
@@ -349,9 +352,9 @@ void Compiler::visitFunc(const FnDefPtr& node) {
     node->fnproto->accept(this);
     node->LLVMFunc = 
         LLVMAddFunction(module, node->getFnName().c_str(), fndef->rawTypeRef);
-    if(node->fnproto->getParamList()){
+    if(node->fnproto->getParamList()) {
         int arg_cnt = 0;
-        for(auto& nodes: *node->fnproto->getParamList()){
+        for(auto& nodes: *node->fnproto->getParamList()) {
             auto vardecl = getVar(node, nodes->getArgName());
             vardecl->const_val_ref = LLVMGetParam(node->LLVMFunc, arg_cnt);
             arg_cnt += 1;
@@ -362,7 +365,7 @@ void Compiler::visitFunc(const FnDefPtr& node) {
     LLVMPositionBuilderAtEnd(builder, InitBasicBlock);
     node->getbody()->accept(this);
     LLVMPositionBuilderAtEnd(builder, InitBasicBlock);
-    if(!fndef->have_return){
+    if(!fndef->have_return) {
         LLVMBuildRetVoid(builder);
     }
 }
@@ -378,7 +381,7 @@ void Compiler::visit(FnProto* node) {
     LLVMTypeRef* param_types = (LLVMTypeRef*)malloc(node->arg_count);
     LLVMTypeRef ret_type = LLVMVoidType();
     if(node->arg_count > 0){
-        for(ParamNodePtr &param: *node->getParamList()){
+        for(ParamNodePtr &param: *node->getParamList()) {
             param_types[arg_count] = param->getArgType()->typeptr->llvmtype;
             arg_count+=1;
         }
