@@ -34,7 +34,6 @@ Compiler::~Compiler(){
     if(dump_ir){
         LLVMDumpModule(module);
     }
-
     char *error_msg = nullptr;
     char* fname = strdup("output.o");
     if (LLVMTargetMachineEmitToFile(targetMachine, module, fname,
@@ -173,18 +172,12 @@ void Compiler::visit(PrefixOperation* node) {
 
 void Compiler::visit(Symbol* node) {
     TypeNodePtr type = node->var_decl->getType()->typeptr;
-    if(type->type_id == TypeNodeTableIdString){
-        LLVMValueRef zeroIndex = LLVMConstInt( LLVMInt64Type(), 0, true );
-        LLVMValueRef indexes[2] = { zeroIndex, zeroIndex };
-        LLVMValueRef paramval = LLVMBuildLoad(builder, node->var_decl->val_ref, "");
-        node->ret_ref = 
-            LLVMBuildInBoundsGEP(builder, paramval, indexes, 2, "");
-    }
-    else if (type->type_id == TypeNodeTableIdInt){
+    if (type->type_id == TypeNodeTableIdInt) {
         node->ret_ref = 
             LLVMBuildLoad(builder, node->var_decl->val_ref, "");
     }
-    else if(type->type_id == TypeNodeTablePointer){
+    else if(type->type_id == TypeNodeTablePointer || 
+            type->type_id == TypeNodeTableIdString) {
          node->ret_ref = LLVMBuildLoad(builder, node->var_decl->val_ref, "");
     }
 }
@@ -268,7 +261,7 @@ void Compiler::visit(AsmExpr* node) {
     for(auto& nodes: node->clobbers) {
         const_buffer.append(string_format("~{%s}", nodes->clobname.c_str()));
         index+=1;
-        if(index < total_count){
+        if(index < total_count) {
             const_buffer.append(",");
         }
     }

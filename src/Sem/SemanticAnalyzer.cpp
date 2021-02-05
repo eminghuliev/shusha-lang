@@ -159,7 +159,7 @@ void SemanticAnalyzer::handle_prefix_op(const VarDeclPtr& node, const PrefixOper
 
 void SemanticAnalyzer::visitVar(const VarDeclPtr& node) {
     NodeVisitor::visitVar(node);
-    if(node->is_ptr){
+    if(node->is_ptr) {
         analyze_ptr(node);
         PrefixOperationPtr prefixop =
             dynamic_pointer_cast<PrefixOperation>(node->getExpr());

@@ -1,6 +1,6 @@
 #ifndef SEMANTIC_ANALYZER
 #define SEMANTIC_ANALYZER
-#include "../Parser/Compiler.hpp"
+#include "../CodeGen/Compiler.hpp"
 class SemanticAnalyzer : public NodeVisitor {
 public:
     SemanticAnalyzer(Compiler* context) : compilercontext(context) {}

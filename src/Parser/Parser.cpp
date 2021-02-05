@@ -278,10 +278,10 @@ ASTNodePtr Parser::ParseAsm() {
     get_token(token, STRING); 
     if(token.kind == STRING) asmptr->asmtemplate = token.tokenbuff;
     if(!expect_next(RIGHT_PAREN)) {
-        if(expect_next(COMMA))
+        if(expect_next(COLON))
             parse_asm_input(asmptr);
         else
-            ::Error("Expecte , token\n");
+            ::Error("Expected : token\n");
     }
     if(!expect_next(SEMICOLON)){
         ::Error("Expected ; token\n");

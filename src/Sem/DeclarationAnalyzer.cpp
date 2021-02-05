@@ -1,7 +1,7 @@
 #include "../Ast/RootAst.hpp"
 #include "../Ast/FnDef.hpp"
 #include <memory>
-#include "../Parser/Compiler.hpp"
+#include "../CodeGen/Compiler.hpp"
 #include "DeclarationAnalyzer.hpp"
 #include "../Utils/Error.hpp"
 typedef std::shared_ptr<TypeNodeString> TypeNodeStringPtr;
@@ -30,7 +30,7 @@ void DeclarationAnalyzer::visit(StringLiteral* node) {
     node->typenode->typeptr = compilercontext->type_table.at("str");
     node->nodetype = TypeNodeTableIdString;
 }
-void DeclarationAnalyzer::visit(TypeIdentifier* node){
+void DeclarationAnalyzer::visit(TypeIdentifier* node) {
     /// checking for primitive types
     unordered_map<std::string, TypeNodePtr>::iterator 
         iterator = compilercontext->type_table.find(node->getName());
@@ -49,11 +49,11 @@ void DeclarationAnalyzer::visit(Symbol* node) {
     std::unordered_map<std::string, ASTNodePtr>::iterator 
         iterator_decl = rootast->decl_table.find(node->getsym());
 
-    if(iterator_var != fndef->var_table.end()){
+    if(iterator_var != fndef->var_table.end()) {
         node->setType(iterator_var->second->getType());
         node->setVarDecl(iterator_var->second);
     }
-    else if(iterator_decl != rootast->decl_table.end()){
+    else if(iterator_decl != rootast->decl_table.end()) {
         node->setFnDef(iterator_decl->second); 
     }
     else ::Error(

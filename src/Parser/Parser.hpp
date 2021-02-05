@@ -7,7 +7,7 @@
 #include "../Ast/FnDef.hpp"
 #include "../Sem/SemanticAnalyzer.hpp"
 #include "../Sem/DeclarationAnalyzer.hpp"
-#include "../CodeGen/CodeGen.hpp"
+#include "../CodeGen/Compiler.hpp"
 class Parser {
     public:
         Parser(const std::string &fname);
