@@ -3,13 +3,12 @@
 #include "../Utils/Error.hpp"
 #include <fstream>
 Parser::Parser(const std::string &fname) {
-    file = new File();
-    const std::string& fcontent = file->open(fname.c_str());
+    File fd;
+    const std::string& fcontent = fd.open(fname.c_str());
     lexer = new Lexer(fcontent);
     lexer->next();
 }
 Parser::~Parser() {
-    delete file;
     delete lexer;
 }
 Tokens& Parser::get_token(Tokens& token, TokenKind kind) {
@@ -191,7 +190,7 @@ ExpressionPtr Parser::ParsePrefixOperation(const VarDeclPtr& vardeclptr) {
 DeclExpressionPtr Parser::ParseVar() {
     get_token(token, SYNTAX);
     bool is_mut = false;
-    if(token.kind == MUT){
+    if(token.kind == MUT) {
         get_token(token, IDENTIFIER);
         if(token.kind != IDENTIFIER) ::Error("Expected token: identifier\n"); 
         /// Variable is mutable
@@ -249,7 +248,7 @@ void Parser::parse_asm_input(const AsmExprPtr& asmptr) {
             asmout->exprptr = expr;
             asmptr->insertout(asmout);
         }
-        else if(token.kind == CLOB){
+        else if(token.kind == CLOB) {
             if(!expect_next(LEFT_PAREN)) ::Error("Expect ( token\n");
             do {
                 token = get_token(token, STRING);
@@ -288,10 +287,11 @@ ASTNodePtr Parser::ParseAsm() {
     }
     return asmptr;
 }
+
 ASTNodePtr Parser::ParseStatements() {
     Tokens token = {};
     get_token(token, SYNTAX);
-    switch(token.kind){
+    switch(token.kind) {
         case VAR:
             return ParseVar();
             break;
@@ -317,14 +317,14 @@ ASTNodePtr Parser::ParseStatements() {
 
 CodeScopePtr Parser::ParseCodeScope(const CodeScopePtr& codescopeptr) {
     Tokens token = {};
-    while(!expect_next(RIGHT_BRACE) && lexer->curr != 0x0){
+    while(!expect_next(RIGHT_BRACE) && lexer->curr != 0x0) {
         ASTNodePtr statement = ParseStatements();
         if(statement)
             codescopeptr->insert(statement);
     }
     return codescopeptr;
 }
-
+template <bool Extern>
 ASTNodePtr Parser::ParseFn() {
     Tokens token = {};
     FnDefPtr fndef = create<FnDef>();
@@ -336,13 +336,13 @@ ASTNodePtr Parser::ParseFn() {
     if(token.kind != IDENTIFIER) ::Error("Expected token: FN_NAME\n");
     fndef->setFnName(token.tokenbuff);
     fndef->fnproto = fnprotoptr;
+    fndef->isextern = Extern;
     if(!expect_next(LEFT_PAREN)) 
         ::Error("Expected token (\n");
     while(!expect_next(RIGHT_PAREN))
         plistptr = ParseArgs(codescopeptr);
     if(plistptr)
         fnprotoptr->setParamList(plistptr);
-    lexer->next();
     /// Go to next char and check to get return type
     lexer->getchr(token);
     /// Checking to make sure that function has return type
@@ -352,6 +352,11 @@ ASTNodePtr Parser::ParseFn() {
         typeptr->setName(token.tokenbuff);
         fnprotoptr->setRetType(typeptr);
         lexer->getchr(token);
+    }
+    if(Extern) {
+        if(token.kind != SEMICOLON) ::Error("Expected ; token\n");
+        fndef->setbody(codescopeptr);
+        return fndef;
     }
     if(token.kind == LEFT_BRACE) {
         /// Parse Function block scope. It starts with { and ends with }
@@ -365,9 +370,15 @@ ASTNodePtr Parser::ParseFn() {
 
 ASTNodePtr Parser::parseTopLevel(Tokens& token) {
     get_token(token, SYNTAX);
-    switch(token.kind){
+    switch(token.kind) {
         case FN:
-            return ParseFn();
+            return ParseFn<false>();
+        case EXTERN:
+            get_token(token, SYNTAX);
+            if(token.kind == FN)
+                return ParseFn<true>();
+            else
+                ::Error("Extern block should have Fn prototype\n");
         case VAR:
         case END_OF_FILE:
         case END:
@@ -392,13 +403,13 @@ bool Parser::start(const RootAstPtr& programPtr) {
 
 int main(int argc, char **argv) {
     bool dump_ir = false;
-    if(argc < 2){
+    if(argc < 2) {
         shusha_panic("No input files");
     }
     std::string fname = argv[1];
-    for(int ii = 1; ii < argc; ii +=1){
+    for(int ii = 1; ii < argc; ii +=1) {
         char *argument = argv[ii];
-        if(std::strcmp(argument, "--dump-ir") == 0){
+        if(std::strcmp(argument, "--dump-ir") == 0) {
             dump_ir = true;
         }
     }
@@ -411,9 +422,11 @@ int main(int argc, char **argv) {
     programPtr->accept(declanalyzer);
     programPtr->accept(sem);
     programPtr->accept(compilerctx);
-    delete sem;
-    delete declanalyzer;
-    delete compilerctx;
+    {
+        delete sem;
+        delete declanalyzer;
+        delete compilerctx;
+    }
     return 1;
 }
 

@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include "../Utils/HashMap.hpp"
 #include "../Utils/ObjectAllocator.hpp"
 #include "../Utils/Error.hpp"
 #include "../llvm-wrapper/Shusha-LLVM.hpp"
@@ -118,6 +119,7 @@ public:
     std::vector<ASTNodePtr>::iterator begin() { return ast.begin();}
     std::vector<ASTNodePtr>::iterator end() { return ast.end();}
     void addAst(const ASTNodePtr& ptr) {ast.push_back(ptr);}
+    HashMap<std::string, ASTNodePtr> new_decl_table;
     std::unordered_map<std::string, ASTNodePtr> decl_table;
 };
 

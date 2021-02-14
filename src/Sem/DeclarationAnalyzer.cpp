@@ -9,14 +9,13 @@ typedef std::shared_ptr<TypeNodeInteger> TypeNodeIntegerPtr;
 void DeclarationAnalyzer::visitFunc(const FnDefPtr& node) {
     /// Update Function AST Node for each fn scope
     fndef = node;
-    std::unordered_map<std::string, ASTNodePtr>::iterator
-        iterator = rootast->decl_table.find(node->getFnName());
-    if(iterator != rootast->decl_table.end()){
-        if(dynamic_cast<FnDef*>(iterator->second.get())) 
+    HashMap<std::string, ASTNodePtr>::Iterator it = rootast->new_decl_table.find(node->getFnName());
+    if(it != rootast->new_decl_table.end()) {
+        if(dynamic_cast<FnDef*>(it->val.get()))
             ::Error("Error: Redefinition of function");
     }
     else {
-        rootast->decl_table.insert(std::make_pair(node->getFnName(), node));
+        rootast->new_decl_table.insert(node->getFnName(), node);
     }
     /// calling for CodeScope visitor
     node->getbody()->accept(this);
@@ -48,7 +47,6 @@ void DeclarationAnalyzer::visit(Symbol* node) {
     /// Declaration Table
     std::unordered_map<std::string, ASTNodePtr>::iterator 
         iterator_decl = rootast->decl_table.find(node->getsym());
-
     if(iterator_var != fndef->var_table.end()) {
         node->setType(iterator_var->second->getType());
         node->setVarDecl(iterator_var->second);

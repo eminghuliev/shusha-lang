@@ -62,6 +62,7 @@ public:
     std::unordered_map<std::string, ASTNode*> decl_table;
     std::unordered_map<std::string, VarDeclPtr> var_table;
     FnProtoPtr fnproto;
+    bool isextern = false;
     LLVMTypeRef rawTypeRef;
     LLVMValueRef LLVMFunc;
     bool have_return = false;

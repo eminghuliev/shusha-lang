@@ -310,13 +310,12 @@ LLVMValueRef Compiler::genExpr(const ExpressionPtr& expr, const TypePtr& type) {
 }
 
 void Compiler::visit(FuncCall* node) {
-    LLVMValueRef* param_values = nullptr;
+    LLVMValueRef* param_values = 
+        static_cast<LLVMValueRef*>(calloc(node->getparams()->size(), sizeof(LLVMValueRef)));
     FnDefPtr fndef = dynamic_pointer_cast<FnDef>(node->getFnExpr()->getFnDef());
     int arg_cnt = 0;
     if(node->getparams()){
         for(auto &nodes: *node->getparams()) {
-            param_values = 
-                static_cast<LLVMValueRef*>(calloc(node->getparams()->size(), sizeof(LLVMValueRef)));
             LLVMValueRef retval = genExpr(nodes, 
                     fndef->fnproto->getParamList()->at(arg_cnt)->getArgType()->typeptr);   
             param_values[arg_cnt] = retval;
@@ -353,6 +352,8 @@ void Compiler::visitFunc(const FnDefPtr& node) {
             arg_cnt += 1;
         }
     }
+    if(node->isextern)
+        return;
     LLVMBasicBlockRef InitBasicBlock = 
         LLVMAppendBasicBlock(node->LLVMFunc, "init");
     LLVMPositionBuilderAtEnd(builder, InitBasicBlock);

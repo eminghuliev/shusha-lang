@@ -19,6 +19,7 @@ class Parser {
         bool pred_bak(TokenKind expect);
         bool pred_next(char token);
         void Error(const std::string& err);
+        template <bool Extern>
         ASTNodePtr ParseFn();
         ASTNodePtr ParseStatements();
         void ParseFnParams(Tokens& token, FuncParamListPtr& paramlist); 
