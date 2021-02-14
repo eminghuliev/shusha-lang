@@ -4,6 +4,23 @@
 <p align="center">
 Shusha programming language (*WIP*)</p>
 
+## Build from source code
+### Dependencies:
+* Clang >= 10.0.0
+* LLVM  >= 10.0.0
+### Compilation instructions:
+```
+bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-11 100
+sudo update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-11 100
+make
+```
+### Dump IR with Shusha 
+```
+./build/bin/shusha test/source.sl --dump-ir
+```
+
 Copyright
 ---------------------------------
 Copyright (c) 2021 GOUP. All rights reserved.
+
