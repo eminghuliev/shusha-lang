@@ -142,6 +142,7 @@ ExpressionPtr Parser::ParseExpression(Tokens& token) {
     ExpressionPtr res = ParsePrefixDecl(token);
     if(lexer->isBinOp(token)){
         BinaryExpressionPtr binexprptr = create<BinaryExpression>();
+        lexer->getchr(token);
         ExpressionPtr rhs = ParsePrefixDecl(token);
         binexprptr->setBinOpType(token.binoptype);
         binexprptr->setlhs(res);
@@ -190,17 +191,9 @@ ExpressionPtr Parser::ParsePrefixOperation(const VarDeclPtr& vardeclptr) {
 DeclExpressionPtr Parser::ParseVar() {
     get_token(token, SYNTAX);
     bool is_mut = false;
-    if(token.kind == MUT) {
-        get_token(token, IDENTIFIER);
-        if(token.kind != IDENTIFIER) ::Error("Expected token: identifier\n"); 
-        /// Variable is mutable
-        is_mut = true;
-    }
-    else
-    {
-        get_token(token, IDENTIFIER);
-        if(token.kind != IDENTIFIER) ::Error("Expected token: identifier\n"); 
-    }
+    if(token.kind == MUT) is_mut = true;
+    get_token(token, IDENTIFIER);
+    if(token.kind != IDENTIFIER) ::Error("Expected token: identifier\n"); 
     VarDeclPtr expr = create<VarDecl>();
     expr->setName(token.tokenbuff);
     if(!expect_next(COLON)) ::Error("Expect : token\n");

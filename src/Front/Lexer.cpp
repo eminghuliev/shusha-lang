@@ -158,22 +158,27 @@ void Lexer::next(){
 
 bool Lexer::isBinOp(Tokens& token){
     BinOpType binoptype;
+    getchr(token, false);
     switch(token.kind){
         case ASTERISK:
             binoptype = BinOpTypeMUL;
             while(is_space(curr)) next();
+            next();
             break;
         case PLUS:
             binoptype = BinOpTypeADD;
             while(is_space(curr)) next();
+            next();
             break;
         case MINUS:
             binoptype = BinOpTypeSUB;
             while(is_space(curr)) next();
-            break; 
+            next();
+            break;
         case DIV:
             binoptype = BinOpTypeDIV;
             while(is_space(curr)) next();
+            next();
             break;
         default:
             break;

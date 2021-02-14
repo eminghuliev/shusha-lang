@@ -20,6 +20,7 @@ Compiler::Compiler(bool dumpir) : dump_ir(dumpir){
     if(LLVMGetTargetFromTriple(triple, &targetRef, &error_msg)){
         printf("%s\n", error_msg);
     }
+    printf("%s\n", cpu_arch.c_str());
     targetMachine = LLVMCreateTargetMachine(targetRef, 
             triple,
             cpu_arch.c_str(), 
@@ -35,14 +36,16 @@ Compiler::~Compiler(){
         LLVMDumpModule(module);
     }
     char *error_msg = nullptr;
-    char* fname = strdup("output.o");
+    char* fname = strdup("build/output.o");
     if (LLVMTargetMachineEmitToFile(targetMachine, module, fname,
                 LLVMObjectFile, &error_msg))
     {
         shusha_panic("unable to write object file: %s", error_msg);
     }
+    linktoexecutable(fname);
     LLVMDisposeModule(module);
     LLVMDisposeBuilder(builder);
+    remove(fname);
     module = nullptr;
 }
 
@@ -51,6 +54,10 @@ typedef std::shared_ptr<TypeNodeString> TypeNodeStringPtr;
 typedef std::shared_ptr<TypeNodeBool> TypeNodeBoolPtr;
 typedef std::shared_ptr<TypeNodeVoid> TypeNodeVoidPtr;
 typedef std::shared_ptr<TypeNodeNumberLt> TypeNodeNumberLtPtr;
+
+void Compiler::linktoexecutable(char* fname) {
+
+}
 
 void Compiler::init_builtin_types() {
     TypeNodeNumberLtPtr number = create<TypeNodeNumberLt>();

@@ -13,6 +13,7 @@ public:
     Compiler(bool dumpir);
     ~Compiler();
     void init_builtin_types();
+    void linktoexecutable(char* fname);
     virtual void visitFunc(const FnDefPtr& node) override;
     virtual void visitCodeScope(const CodeScopePtr& node) override;
     virtual void visitRoot(const RootAstPtr& node) override;
