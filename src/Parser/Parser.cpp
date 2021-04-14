@@ -108,7 +108,7 @@ ExpressionPtr Parser::ParseSuffixExpr(Tokens& token) {
     return nullptr;
 }
 ExpressionPtr Parser::ParsePrefixDecl(Tokens& token) {
-    if(token.kind == AMPERSAND){ // is that ptr?
+    if(token.kind == AMPERSAND) {
         PrefixOperationPtr prefixptr = create<PrefixOperation>();
         lexer->getchr(token);
         ExpressionPtr suffixres = ParsePrefixDecl(token);
@@ -128,7 +128,7 @@ ExpressionPtr Parser::ParsePrefixDecl(Tokens& token) {
         if(!expect_next(SEMICOLON)) ::Error("Expected ; token\n");
         return fncall;
     }
-    if(expect_next(EQUAL)){
+    if(expect_next(EQUAL)) {
         VarAssignPtr assignptr = create<VarAssign>();
         assignptr->setname(suffixres);
         lexer->getchr(token, false);
@@ -138,16 +138,22 @@ ExpressionPtr Parser::ParsePrefixDecl(Tokens& token) {
     }
     return suffixres;
 }
-ExpressionPtr Parser::ParseExpression(Tokens& token) {
-    ExpressionPtr res = ParsePrefixDecl(token);
-    if(lexer->isBinOp(token)){
+
+ExpressionPtr Parser::ParseBinOps(Tokens& token, ExpressionPtr& lhs) {
         BinaryExpressionPtr binexprptr = create<BinaryExpression>();
         lexer->getchr(token);
         ExpressionPtr rhs = ParsePrefixDecl(token);
         binexprptr->setBinOpType(token.binoptype);
-        binexprptr->setlhs(res);
+        binexprptr->setlhs(lhs);
         binexprptr->setrhs(rhs);
         return binexprptr;
+}
+
+ExpressionPtr Parser::ParseExpression(Tokens& token) {
+    ExpressionPtr res = ParsePrefixDecl(token);
+    if(lexer->isBinOp(token)) {
+        ExpressionPtr binary = ParseBinOps(token, res);
+        return binary;
     }
     return res;
 }
@@ -159,7 +165,10 @@ ExpressionPtr Parser::ParsePrefixOperation(const VarDeclPtr& vardeclptr) {
     if(token.kind == ASTERISK){
         vardeclptr->is_ptr = true; 
         get_token(token, IDENTIFIER); // identifier for type
-    } else if(token.kind == IDENTIFIER) get_token(token, IDENTIFIER);
+    } 
+    else if(token.kind == IDENTIFIER)  {
+        get_token(token, IDENTIFIER);
+    }
     TypeIdentifierPtr typeidPtr = create<TypeIdentifier>();
     typeidPtr->setName(token.tokenbuff);
     vardeclptr->setType(typeidPtr);

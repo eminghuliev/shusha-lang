@@ -20,15 +20,18 @@ void DeclarationAnalyzer::visitFunc(const FnDefPtr& node) {
     /// calling for CodeScope visitor
     node->getbody()->accept(this);
 }
+
 void DeclarationAnalyzer::visitCodeScope(const CodeScopePtr& node) {
     codescope = node;
     NodeVisitor::visitCodeScope(node);
 }
+
 void DeclarationAnalyzer::visit(StringLiteral* node) {
     node->typenode = create<TypeIdentifier>();
     node->typenode->typeptr = compilercontext->type_table.at("str");
     node->nodetype = TypeNodeTableIdString;
 }
+
 void DeclarationAnalyzer::visit(TypeIdentifier* node) {
     /// checking for primitive types
     unordered_map<std::string, TypeNodePtr>::iterator 
@@ -39,6 +42,7 @@ void DeclarationAnalyzer::visit(TypeIdentifier* node) {
     }
     ::Error("Undefined identifier for type\n");
 }
+
 void DeclarationAnalyzer::visit(Symbol* node) {
     /// Search for Variable Declarations
     node->typenode = create<TypeIdentifier>();
@@ -89,6 +93,7 @@ void DeclarationAnalyzer::visit(IntegerLiteral* node) {
 void DeclarationAnalyzer::visit(ReturnStatement *node) {
     node->getExpr()->accept(this);
 }
+
 void DeclarationAnalyzer::visit(FuncCall* node) {
     node->getFnExpr()->accept(this);
     if(node->getparams()){
@@ -99,10 +104,12 @@ void DeclarationAnalyzer::visit(FuncCall* node) {
         }
     }
 }
+
 void DeclarationAnalyzer::visit(VarAssign* node) {
     if(node->getExpr())
         node->getExpr()->accept(this);
 }
+
 void DeclarationAnalyzer::visitVar(const VarDeclPtr& node) {
     std::unordered_map<std::string, VarDeclPtr>::iterator
         iterator = fndef->var_table.find(node->getName());
@@ -126,7 +133,8 @@ void DeclarationAnalyzer::visitVar(const VarDeclPtr& node) {
         node->getExpr()->accept(this);
     }   
 }
-void DeclarationAnalyzer::visitRoot(const RootAstPtr& node){
+
+void DeclarationAnalyzer::visitRoot(const RootAstPtr& node) {
     rootast = node;
     NodeVisitor::visitRoot(node);
 }

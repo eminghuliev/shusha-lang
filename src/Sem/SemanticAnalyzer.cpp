@@ -30,6 +30,7 @@ void SemanticAnalyzer::visit(ReturnStatement* node) {
         ::Error("Return statement has invalid type\n");
     }
 }
+
 typedef std::shared_ptr<StringLiteral> StringLiteralPtr;
 void SemanticAnalyzer::visit(VarAssign* node) {
     StringLiteralPtr strptr = 
@@ -78,6 +79,7 @@ void SemanticAnalyzer::visit(VarAssign* node) {
         else ::Error("Undefined identifier for variable assignment\n");
     }
 }
+
 /// Type checking for Identifiers
 void SemanticAnalyzer::visit(TypeIdentifier* node){
     /// checking for builtin types
@@ -89,6 +91,7 @@ void SemanticAnalyzer::visit(TypeIdentifier* node){
     }
     ::Error("Undefined identifier for type\n");
 }
+
 void SemanticAnalyzer::visit(FuncCall* node) {
     if(node->getparams()){
         FnDefPtr fndef = dynamic_pointer_cast<FnDef>(node->getFnExpr()->getFnDef());
@@ -126,12 +129,13 @@ void SemanticAnalyzer::generate_ptr(TypeNodePtr& typeptr, TypeNodePtr& actual_ty
     typeptr->ptr->child_type = child_type;
 }
 
-void SemanticAnalyzer::visit(PrefixOperation* node){
+void SemanticAnalyzer::visit(PrefixOperation* node) {
     if(node->getOperation() == PrefixOperationGetPointer){
         generate_ptr(node->typenode->typeptr,
                 node->getopexpr()->typenode->typeptr);
     }
 }
+
 void SemanticAnalyzer::check_cast_decl(const TypePtr& expected_type,
         const TypePtr& actual_type,
         const ExpressionPtr& expr) {
@@ -172,10 +176,12 @@ void SemanticAnalyzer::visitVar(const VarDeclPtr& node) {
     if(VarExpr)
         check_cast_decl(node->getType()->typeptr, node->getExpr()->typenode->typeptr, VarExpr);
 }
-void SemanticAnalyzer::visitCodeScope(const CodeScopePtr& node){
+
+void SemanticAnalyzer::visitCodeScope(const CodeScopePtr& node) {
     NodeVisitor::visitCodeScope(node);
 }
-void SemanticAnalyzer::visitRoot(const RootAstPtr& node){
+
+void SemanticAnalyzer::visitRoot(const RootAstPtr& node) {
     rootast = node;
     NodeVisitor::visitRoot(node);
 }

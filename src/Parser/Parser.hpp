@@ -29,6 +29,7 @@ class Parser {
         ASTNodePtr parseTopLevel(Tokens& token);
         DeclExpressionPtr ParseVar();
         ExpressionPtr ParsePrefixOperation(const VarDeclPtr& vardeclptr);
+        ExpressionPtr ParseBinOps(Tokens& token, ExpressionPtr& lhs);
         ExpressionPtr ParseExpression(Tokens& token);
         ExpressionPtr ParseSuffixExpr(Tokens& token);
         ExpressionPtr ParsePrefixDecl(Tokens& token);

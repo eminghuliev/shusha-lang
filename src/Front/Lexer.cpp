@@ -157,7 +157,7 @@ void Lexer::next(){
 }
 
 bool Lexer::isBinOp(Tokens& token){
-    BinOpType binoptype;
+    BinOpType binoptype = BinOpTypeUnknown;
     getchr(token, false);
     switch(token.kind){
         case ASTERISK:
@@ -183,11 +183,7 @@ bool Lexer::isBinOp(Tokens& token){
         default:
             break;
     }
-    if(is_digit(curr))
-    {
-        token.binoptype = binoptype;
-        return true;
-    }
+    if(binoptype != BinOpTypeUnknown) return true;
     return false;
 }
 

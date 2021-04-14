@@ -24,7 +24,7 @@ SOURCES = $(shell find $(SRC_PATH) -name '*.$(SRC_EXT)' | sort -k 1nr | cut -f2-
 OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o)
 DEPS = $(OBJECTS:.o=.d)
 
-COMPILE_FLAGS = -std=c++17 -g
+COMPILE_FLAGS = -std=c++17 -g -O0
 INCLUDES = -I include/ -I /usr/local/include $(LLVM_CXXFLAGS)
 LIBS = $(LLVM_LDFLAGS)
 

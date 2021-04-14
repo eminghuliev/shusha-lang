@@ -116,6 +116,7 @@ enum BinOpType {
     BinOpTypeBoolOR,
     BinOpTypeBoolAND,
     BinOpTypeMod,
+    BinOpTypeUnknown,
 };
 
 

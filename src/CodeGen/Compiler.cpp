@@ -20,7 +20,6 @@ Compiler::Compiler(bool dumpir) : dump_ir(dumpir){
     if(LLVMGetTargetFromTriple(triple, &targetRef, &error_msg)){
         printf("%s\n", error_msg);
     }
-    printf("%s\n", cpu_arch.c_str());
     targetMachine = LLVMCreateTargetMachine(targetRef, 
             triple,
             cpu_arch.c_str(), 
