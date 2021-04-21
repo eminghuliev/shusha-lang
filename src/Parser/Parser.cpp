@@ -46,6 +46,7 @@ bool Parser::pred_next(char token) {
     lexer->next();
     return false;
 }
+
 ParamListNodePtr Parser::ParseArgs(const CodeScopePtr& codescopeptr) {
     Tokens token = {};
     ParamListNodePtr paramlistptr = create<ParamListNode>();
@@ -84,7 +85,7 @@ void Parser::ParseFnParams(Tokens& token,
             continue;
     }
     return;
-} 
+}
 
 ExpressionPtr Parser::ParseSuffixExpr(Tokens& token) {
     if(token.kind == INTEGER) {
@@ -107,6 +108,7 @@ ExpressionPtr Parser::ParseSuffixExpr(Tokens& token) {
     }
     return nullptr;
 }
+
 ExpressionPtr Parser::ParsePrefixDecl(Tokens& token) {
     if(token.kind == AMPERSAND) {
         PrefixOperationPtr prefixptr = create<PrefixOperation>();
@@ -120,7 +122,7 @@ ExpressionPtr Parser::ParsePrefixDecl(Tokens& token) {
     if(expect_next(LEFT_PAREN)) {
         FnCallPtr fncall = create<FuncCall>();
         fncall->setFnExpr(suffixres);
-        if(!expect_next(RIGHT_PAREN)){
+        if(!expect_next(RIGHT_PAREN)) {
             FuncParamListPtr plist = create<FuncParamList>();
             ParseFnParams(token, plist);
             fncall->setParams(plist);
@@ -162,18 +164,18 @@ ExpressionPtr Parser::ParsePrefixOperation(const VarDeclPtr& vardeclptr) {
     Tokens token = {};
     PointerPtr pptr;
     lexer->getchr(token);
-    if(token.kind == ASTERISK){
+    if(token.kind == ASTERISK) {
         vardeclptr->is_ptr = true; 
         get_token(token, IDENTIFIER); // identifier for type
     } 
-    else if(token.kind == IDENTIFIER)  {
+    else if(token.kind == IDENTIFIER) {
         get_token(token, IDENTIFIER);
     }
     TypeIdentifierPtr typeidPtr = create<TypeIdentifier>();
     typeidPtr->setName(token.tokenbuff);
     vardeclptr->setType(typeidPtr);
    
-    if(expect_next(IDENTIFIER)){
+    if(expect_next(IDENTIFIER)) {
         get_token(token, SYNTAX);
         if(token.kind == ALIGN){
             if(!expect_next(LEFT_PAREN)) ::Error("Expected ( token\n");
@@ -184,10 +186,11 @@ ExpressionPtr Parser::ParsePrefixOperation(const VarDeclPtr& vardeclptr) {
             lexer->getchr(token);
         }
     }
-    if(expect_next(EQUAL)){
+    if(expect_next(EQUAL)) {
         ExpressionPtr expr_res;
         lexer->getchr(token);
         expr_res = ParseExpression(token);
+        expr_res->setVarDecl(vardeclptr);
         if(!expect_next(SEMICOLON)){
             ::Error("Expected ; token\n");
         }
@@ -226,7 +229,7 @@ ASTNodePtr Parser::ParseReturn() {
 void Parser::parse_asm_input(const AsmExprPtr& asmptr) {
     while(true){
         get_token(token, SYNTAX);
-        if(token.kind == IN){
+        if(token.kind == IN) {
             if(!expect_next(LEFT_PAREN)) ::Error("Expect ( token\n");    
             get_token(token, STRING); 
             AsmInputPtr asminput = create<AsmInput>();

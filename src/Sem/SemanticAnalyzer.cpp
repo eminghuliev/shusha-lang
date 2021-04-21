@@ -11,9 +11,9 @@ void SemanticAnalyzer::visitFunc(const FnDefPtr& node) {
     node->getbody()->accept(this);
 }
 
-void SemanticAnalyzer::visit(FnProto* node) {
+void SemanticAnalyzer::visit(FnProto* const node) {
     int arg_count = 0;
-    if(node->getParamList()){
+    if(node->getParamList()) {
         for(ParamNodePtr &param: *node->getParamList()){
             param->getArgType()->accept(this);
             arg_count+=1;
@@ -26,7 +26,7 @@ typedef std::shared_ptr<TypeNodeInteger> TypeNodeIntegerPtr;
 void SemanticAnalyzer::visit(ReturnStatement* node) {
     TypeNodePtr expected_ret_type = fndef->fnproto->getRetType()->typeptr;
     if(!canCastType(node->getExpr()->typenode->typeptr, 
-                expected_ret_type, node->getExpr())){
+                expected_ret_type, node->getExpr())) {
         ::Error("Return statement has invalid type\n");
     }
 }
@@ -81,25 +81,25 @@ void SemanticAnalyzer::visit(VarAssign* node) {
 }
 
 /// Type checking for Identifiers
-void SemanticAnalyzer::visit(TypeIdentifier* node){
+void SemanticAnalyzer::visit(TypeIdentifier* const node) {
     /// checking for builtin types
     unordered_map<std::string, TypeNodePtr>::iterator 
         iterator = compilercontext->type_table.find(node->getName());
-    if(iterator != compilercontext->type_table.end()){
+    if(iterator != compilercontext->type_table.end()) {
         node->typeptr = iterator->second;
         return;
     }
     ::Error("Undefined identifier for type\n");
 }
 
-void SemanticAnalyzer::visit(FuncCall* node) {
+void SemanticAnalyzer::visit(FuncCall* const node) {
     if(node->getparams()){
         FnDefPtr fndef = dynamic_pointer_cast<FnDef>(node->getFnExpr()->getFnDef());
-        if(!node->getparams() && fndef->fnproto->arg_count >= 1){
+        if(!node->getparams() && fndef->fnproto->arg_count >= 1) {
             ::Error(string_format("Expected %d arguments found 0\n", 
                         fndef->fnproto->arg_count));
         }
-        else if(fndef->fnproto->arg_count != node->getparams()->size()){
+        else if(fndef->fnproto->arg_count != node->getparams()->size()) {
             ::Error(string_format("Expected %d arguments found %d\n",
                         fndef->fnproto->arg_count,
                         node->getparams()->size()));
@@ -129,11 +129,19 @@ void SemanticAnalyzer::generate_ptr(TypeNodePtr& typeptr, TypeNodePtr& actual_ty
     typeptr->ptr->child_type = child_type;
 }
 
-void SemanticAnalyzer::visit(PrefixOperation* node) {
-    if(node->getOperation() == PrefixOperationGetPointer){
+void SemanticAnalyzer::visit(PrefixOperation* const node) {
+    if(node->getOperation() == PrefixOperationGetPointer) {
         generate_ptr(node->typenode->typeptr,
                 node->getopexpr()->typenode->typeptr);
     }
+}
+
+void SemanticAnalyzer::visit(BinaryExpression* const node) {
+    const auto exprvar = node->getVarDecl();
+    const TypeIdentifierPtr exprtype = exprvar->getType();
+    const TypeIdentifierPtr  rhstype = node->right()->typenode;
+    const TypeIdentifierPtr lhstype = node->left()->typenode;
+    check_cast_decl(exprptr->typeptr, rhstype->typeptr, exprvar);
 }
 
 void SemanticAnalyzer::check_cast_decl(const TypePtr& expected_type,
@@ -141,7 +149,7 @@ void SemanticAnalyzer::check_cast_decl(const TypePtr& expected_type,
         const ExpressionPtr& expr) {
     auto expected_val_type = expected_type;
     if(!canCastType(actual_type, 
-                expected_val_type, expr)){
+                expected_val_type, expr)) {
         ::Error("Declared variable's type doesn't match with value type\n");
     }
 }
@@ -154,7 +162,7 @@ void SemanticAnalyzer::handle_prefix_op(const VarDeclPtr& node, const PrefixOper
     node->getExpr()->accept(this);
     if(prefixop->getOperation() == PrefixOperationGetPointer && 
             prefixop->getopexpr()->typenode->typeptr->type_id == TypeNodeTablePointer && 
-            node->getType()->typeptr->type_id == TypeNodeTablePointer){
+            node->getType()->typeptr->type_id == TypeNodeTablePointer) {
             check_cast_decl(node->getType()->typeptr->ptr->child_type, 
                     prefixop->getopexpr()->typenode->typeptr->ptr->child_type, 
                     prefixop->getopexpr());
@@ -167,14 +175,15 @@ void SemanticAnalyzer::visitVar(const VarDeclPtr& node) {
         analyze_ptr(node);
         PrefixOperationPtr prefixop =
             dynamic_pointer_cast<PrefixOperation>(node->getExpr());
-        if(prefixop){
+        if(prefixop) {
             handle_prefix_op(node, prefixop);
             return;
         }
     }
     auto VarExpr = node->getExpr();
-    if(VarExpr)
-        check_cast_decl(node->getType()->typeptr, node->getExpr()->typenode->typeptr, VarExpr);
+    if(!VarExpr) return;
+    VarExpr->accept(this);
+    //check_cast_decl(node->getType()->typeptr, node->getExpr()->typenode->typeptr, VarExpr);
 }
 
 void SemanticAnalyzer::visitCodeScope(const CodeScopePtr& node) {

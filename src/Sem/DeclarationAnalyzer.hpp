@@ -26,6 +26,7 @@ public:
     virtual void visit(Symbol* node) override;
     virtual void visit(VarAssign* node) override;
     virtual void visit(ReturnStatement* node) override;
+    virtual void visit(BinaryExpression* node) override;
     virtual void visit(FuncCall* node) override;
     virtual void visit(AsmExpr* node) override;
     virtual void visit(PrefixOperation* node) override;

@@ -84,6 +84,11 @@ void DeclarationAnalyzer::visit(AsmExpr* node) {
     }
 }
 
+void DeclarationAnalyzer::visit(BinaryExpression* const node) {
+    node->right()->accept(this);
+    node->left()->accept(this);
+}
+
 void DeclarationAnalyzer::visit(IntegerLiteral* node) {
     node->typenode = create<TypeIdentifier>();
     node->typenode->typeptr = compilercontext->builtin_types.at("integer");
@@ -126,10 +131,10 @@ void DeclarationAnalyzer::visitVar(const VarDeclPtr& node) {
         fndef->var_table.insert(std::make_pair(node->getName(), node));
     }
     NodeVisitor::visitVar(node);
-    if(node->is_ptr){
+    if(node->is_ptr) {
         node->getType()->typeptr->ptr = create<Pointer>();
     }
-    if(node->getExpr()){
+    if(node->getExpr()) {
         node->getExpr()->accept(this);
     }   
 }

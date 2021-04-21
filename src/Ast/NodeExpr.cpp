@@ -47,7 +47,7 @@ bool canCastType(TypePtr actual_type,
         return true;
     }
     if(expected_type->type_id == TypeNodeTablePointer && 
-            actual_type->type_id == TypeNodeTablePointer){
+            actual_type->type_id == TypeNodeTablePointer) {
         return canCastType(actual_type->ptr->child_type, 
                 expected_type->ptr->child_type,
                 const_expr);

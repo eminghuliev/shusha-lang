@@ -13,6 +13,7 @@ public:
     virtual void visit(VarAssign* node) override;
     virtual void visit(FuncCall* node) override;
     virtual void visit(TypeIdentifier* node) override;
+    virtual void visit(BinaryExpression* node) override;
     virtual void visit(PrefixOperation* node) override;
     void copy_variable(const VarDeclPtr& node);
     void generate_ptr(TypeNodePtr& typeptr, TypeNodePtr& actual_type);

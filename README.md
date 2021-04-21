@@ -11,8 +11,8 @@ Shusha programming language (*WIP*)</p>
 ### Compilation instructions:
 ```
 bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
-sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-11 100
-sudo update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-11 100
+sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-12 100
+sudo update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-12 100
 make
 ```
 ### Dump IR with Shusha 
